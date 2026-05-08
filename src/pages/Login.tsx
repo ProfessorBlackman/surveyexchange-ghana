@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { useAuthStore } from '../store/authStore';
-import { LogIn, Mail, Lock, AlertCircle, Search } from 'lucide-react';
+import { Mail, Lock, AlertCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function Login() {

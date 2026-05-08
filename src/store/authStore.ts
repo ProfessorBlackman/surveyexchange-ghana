@@ -1,21 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  credits: number;
-  institution?: string;
-  field_of_study?: string;
-}
+import type { User } from '../types';
 
 interface AuthState {
   user: User | null;
   token: string | null;
   setAuth: (user: User, token: string) => void;
   logout: () => void;
-  updateCredits: (credits: number) => void;
+  updateCredits: (creditBalance: number) => void;
+  updateProfile: (updates: Partial<User>) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -25,9 +18,14 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       setAuth: (user, token) => set({ user, token }),
       logout: () => set({ user: null, token: null }),
-      updateCredits: (credits) => set((state) => ({ 
-        user: state.user ? { ...state.user, credits } : null 
-      })),
+      updateCredits: (creditBalance) =>
+        set((state) => ({
+          user: state.user ? { ...state.user, creditBalance } : null,
+        })),
+      updateProfile: (updates) =>
+        set((state) => ({
+          user: state.user ? { ...state.user, ...updates } : null,
+        })),
     }),
     {
       name: 'auth-storage',

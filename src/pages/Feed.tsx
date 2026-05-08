@@ -82,12 +82,12 @@ export default function Feed() {
               transition={{ delay: index * 0.05 }}
               className={cn(
                 "group relative p-6 border bg-white rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all",
-                survey.isBoosted 
+                survey.boosted 
                   ? "border-amber-200 bg-amber-50/20 shadow-md shadow-amber-900/5" 
                   : "border-stone-200 hover:border-emerald-600/30 hover:shadow-lg hover:shadow-stone-200/50"
               )}
             >
-              {survey.isBoosted && (
+              {survey.boosted && (
                 <div className="absolute -top-3 left-6 px-3 py-0.5 bg-amber-400 text-amber-950 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">
                   Featured
                 </div>
@@ -96,7 +96,7 @@ export default function Feed() {
               <div className="flex gap-5 flex-grow">
                 <div className={cn(
                   "w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0 border",
-                  survey.isBoosted ? "bg-white border-amber-200" : "bg-stone-50 border-stone-200"
+                  survey.boosted ? "bg-white border-amber-200" : "bg-stone-50 border-stone-200"
                 )}>
                   {survey.category === 'Health' ? '💊' : survey.category === 'Academic' ? '📚' : survey.category === 'Technology' ? '📡' : '📊'}
                 </div>
@@ -107,7 +107,7 @@ export default function Feed() {
                   <p className="text-[11px] text-stone-500 font-medium flex items-center gap-2">
                     <span className="uppercase font-bold text-emerald-700">{survey.category}</span>
                     <span className="text-stone-300">•</span>
-                    {survey.authorName}
+                    {survey.owner?.name}
                     <span className="text-stone-300">•</span>
                     {survey.estimatedTime} mins
                   </p>
@@ -118,7 +118,7 @@ export default function Feed() {
                 <div className="text-center">
                   <p className={cn(
                     "text-lg font-mono font-bold leading-none",
-                    survey.isBoosted ? "text-amber-700" : "text-stone-700"
+                    survey.boosted ? "text-amber-700" : "text-stone-700"
                   )}>+1</p>
                   <p className="text-[9px] text-stone-400 uppercase font-black tracking-tighter">Credit</p>
                 </div>
@@ -127,7 +127,7 @@ export default function Feed() {
                   to={`/survey/${survey.id}`}
                   className={cn(
                     "px-8 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
-                    survey.isBoosted 
+                    survey.boosted 
                       ? "bg-emerald-800 text-white hover:bg-emerald-900 shadow-lg shadow-emerald-900/20" 
                       : "border border-emerald-800 text-emerald-800 hover:bg-emerald-50"
                   )}

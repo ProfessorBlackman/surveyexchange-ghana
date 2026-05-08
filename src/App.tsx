@@ -12,6 +12,8 @@ import TakeSurvey from './pages/TakeSurvey';
 import Dashboard from './pages/Dashboard';
 import Credits from './pages/Credits';
 import Analytics from './pages/Analytics';
+import Profile from './pages/Profile';
+import EditSurvey from './pages/EditSurvey';
 import Landing from './pages/Landing';
 import api from './lib/api';
 
@@ -24,7 +26,7 @@ export default function App() {
     if (token) {
       // Refresh user data (credits) on load
       api.get('/users/me').then(res => {
-        updateCredits(res.data.creditBalance || res.data.credits);
+        updateCredits(res.data.creditBalance);
       }).catch(err => {
         if (err.response?.status === 401 || err.response?.status === 403) {
           logout();
@@ -50,6 +52,8 @@ export default function App() {
               <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
               <Route path="/credits" element={user ? <Credits /> : <Navigate to="/login" />} />
               <Route path="/survey/:id/analytics" element={user ? <Analytics /> : <Navigate to="/login" />} />
+              <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
+              <Route path="/survey/:id/edit" element={user ? <EditSurvey /> : <Navigate to="/login" />} />
             </Routes>
           </main>
           

@@ -1,41 +1,77 @@
+export type AcademicLevel =
+  | 'UNDERGRADUATE'
+  | 'POSTGRADUATE_MASTERS'
+  | 'POSTGRADUATE_PHD'
+  | 'LECTURER'
+  | 'RESEARCHER'
+  | 'OTHER';
+
+export type Gender = 'MALE' | 'FEMALE' | 'NON_BINARY' | 'PREFER_NOT_TO_SAY';
+
+export type AgeRange = 'UNDER_18' | 'AGE_18_24' | 'AGE_25_34' | 'AGE_35_44' | 'AGE_45_PLUS';
+
+export type ReferralSource = 'WHATSAPP' | 'SOCIAL_MEDIA' | 'WORD_OF_MOUTH' | 'SEARCH_ENGINE' | 'OTHER';
+
+export type SurveyStatus = 'DRAFT' | 'ACTIVE' | 'CLOSED';
+
+export type QuestionType =
+  | 'MULTIPLE_CHOICE'
+  | 'CHECKBOX'
+  | 'SHORT_TEXT'
+  | 'LONG_TEXT'
+  | 'RATING'
+  | 'YES_NO';
+
+export type CreditTransactionType = 'SIGNUP_BONUS' | 'SURVEY_REWARD' | 'BOOST_SPEND' | 'PURCHASE';
+
 export interface User {
   id: string;
   name: string;
   email: string;
-  credits: number;
+  creditBalance: number;
   institution?: string;
-  field_of_study?: string;
+  fieldOfStudy?: string;
+  academicLevel?: AcademicLevel;
+  yearOfStudy?: number;
+  gender?: Gender;
+  ageRange?: AgeRange;
+  referralSource?: ReferralSource;
+  createdAt?: string;
 }
 
 export interface Question {
   id?: string;
   text: string;
-  questionType: 'MULTIPLE_CHOICE' | 'CHECKBOX' | 'SHORT_TEXT' | 'RATING' | 'YES_NO' | 'LONG_TEXT';
+  questionType: QuestionType;
   options?: string[];
-  order?: number;
+  required?: boolean;
+  orderIndex?: number;
 }
 
 export interface Survey {
   id: string;
-  userId: string;
   title: string;
-  description: string;
-  category: string;
-  estimatedTime: number;
-  isBoosted: boolean;
-  authorName: string;
+  description?: string;
+  category?: string;
+  estimatedTime?: number;
+  targetResponses?: number;
+  actualResponseCount?: number;
+  status?: SurveyStatus;
+  boosted: boolean;
+  creditValue?: number;
+  owner?: User;
   createdAt: string;
-  responseCount?: number;
+  publishedAt?: string;
+  boostExpiresAt?: string;
   questions?: Question[];
 }
 
 export interface CreditTransaction {
   id: string;
-  userId: string;
   amount: number;
-  type: 'SIGNUP_BONUS' | 'SURVEY_REWARD' | 'BOOST_SPEND' | 'PURCHASE';
+  type: CreditTransactionType;
+  description?: string;
   referenceId?: string;
-  description: string;
   createdAt: string;
 }
 
@@ -45,16 +81,12 @@ export interface PaginatedResponse<T> {
   size: number;
   totalElements: number;
   totalPages: number;
-}
-
-export interface AnalyticsOverview {
-  totalResponses: number;
-  targetResponses: number;
-  completionPercentage: number;
+  last?: boolean;
+  first?: boolean;
 }
 
 export interface QuestionAnalyticData {
-  optionText: string;
+  option: string;
   count: number;
   percentage: number;
 }
@@ -62,7 +94,7 @@ export interface QuestionAnalyticData {
 export interface QuestionAnalytic {
   questionId: string;
   text: string;
-  type: Question['questionType'];
+  type: QuestionType;
   distribution?: QuestionAnalyticData[];
   textResponses?: string[];
 }
@@ -79,13 +111,12 @@ export interface SurveyAnalytics {
 export interface AnswerRowDTO {
   questionId: string;
   questionText: string;
-  questionType: string;
-  answerText?: string;
-  selectedOptions?: string[];
+  questionType: QuestionType;
+  answerValue?: string;
 }
 
 export interface RawResponse {
   responseId: string;
-  submittedAt: string;
+  respondedAt: string;
   answers: AnswerRowDTO[];
 }

@@ -188,7 +188,7 @@ export default function Analytics() {
                             <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f5f5f4" />
                             <XAxis type="number" hide />
                             <YAxis 
-                              dataKey="optionText" 
+                              dataKey="option" 
                               type="category" 
                               width={100} 
                               tick={{ fontSize: 10, fontWeight: 700, fill: '#78716c' }}
@@ -199,7 +199,7 @@ export default function Analytics() {
                                 if (active && payload && payload.length) {
                                   return (
                                     <div className="bg-stone-900 text-white p-3 rounded-lg shadow-xl border border-stone-800">
-                                      <p className="text-[10px] font-black uppercase tracking-widest mb-1">{payload[0].payload.optionText}</p>
+                                      <p className="text-[10px] font-black uppercase tracking-widest mb-1">{payload[0].payload.option}</p>
                                       <p className="text-lg font-mono font-bold leading-none">{payload[0].value} <span className="text-stone-500 text-xs">Responses</span></p>
                                     </div>
                                   );
@@ -224,7 +224,7 @@ export default function Analytics() {
                         {analysis.distribution.map((item, idx) => (
                           <div key={idx} className="flex items-center justify-between p-4 bg-stone-50 rounded-2xl border border-stone-100">
                             <div>
-                               <p className="text-xs font-black text-stone-900 uppercase tracking-tight mb-1">{item.optionText}</p>
+                               <p className="text-xs font-black text-stone-900 uppercase tracking-tight mb-1">{item.option}</p>
                                <div className="flex items-center gap-2">
                                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
                                   <p className="text-[10px] text-stone-500 font-bold uppercase tracking-widest">{Math.round(item.percentage)}% of total</p>
@@ -285,14 +285,12 @@ export default function Analytics() {
                       </td>
                       <td className="px-8 py-5">
                         <p className="text-xs text-stone-500 font-medium">
-                          {format(new Date(resp.submittedAt), 'MMM d, yyyy HH:mm')}
+                          {format(new Date(resp.respondedAt), 'MMM d, yyyy HH:mm')}
                         </p>
                       </td>
                       {survey?.questions?.map((q: Question) => {
                         const answerRow = resp.answers?.find(a => a.questionId === q.id);
-                        const answerStr = answerRow?.selectedOptions?.length 
-                          ? answerRow.selectedOptions.join(', ')
-                          : answerRow?.answerText || '—';
+                        const answerStr = answerRow?.answerValue || '—';
 
                         return (
                           <td key={q.id} className="px-8 py-5">

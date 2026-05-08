@@ -68,7 +68,7 @@ export default function Credits() {
              </div>
              <div className="flex justify-between items-center">
                 <span className="text-xs font-bold text-stone-400 uppercase tracking-widest">New Balance</span>
-                <span className="text-xl font-mono font-bold text-stone-900">{user?.credits} CR</span>
+                <span className="text-xl font-mono font-bold text-stone-900">{user?.creditBalance} CR</span>
              </div>
           </div>
 

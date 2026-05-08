@@ -1,8 +1,16 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { LogOut, User as UserIcon, Coins, PlusCircle, LayoutDashboard, Search } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { LogOut, Coins, PlusCircle } from 'lucide-react';
+
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+}
 
 export default function Navbar() {
   const { user, logout } = useAuthStore();
@@ -21,11 +29,15 @@ export default function Navbar() {
         <div className="flex items-center gap-10">
           <Link to="/" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-emerald-700 flex items-center justify-center text-white font-bold rounded-sm">S</div>
-            <span className="text-xl font-extrabold tracking-tight text-emerald-900 uppercase">
-              Survey <span className="font-light text-stone-400">Exchange</span>
+            <span className="font-light text-stone-400">
+              Survey<span className="text-xl font-extrabold tracking-tight text-emerald-900 uppercase">X</span>
+              change
             </span>
+            {/* <span className="text-xl font-extrabold tracking-tight text-emerald-900 uppercase">
+              Survey <span className="font-light text-stone-400">Xchange</span>
+            </span> */}
           </Link>
-          
+
           <div className="hidden sm:flex sm:gap-6">
             <Link
               to="/"
@@ -43,12 +55,12 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link 
+          <Link
             to="/credits"
             className="flex items-center gap-2 bg-amber-50 px-3 py-1 border border-amber-200 rounded-full hover:bg-amber-100 transition-colors group"
           >
             <span className="text-amber-700 text-[10px] font-black uppercase tracking-widest italic group-hover:text-amber-800 transition-colors">Credits</span>
-            <span className="text-stone-900 font-mono font-bold text-sm tracking-tighter">{user.credits}</span>
+            <span className="text-stone-900 font-mono font-bold text-sm tracking-tighter">{user.creditBalance}</span>
           </Link>
 
           <Link
@@ -60,16 +72,25 @@ export default function Navbar() {
           </Link>
 
           <div className="flex items-center gap-3 border-l border-stone-100 pl-4">
-            <div className="text-right hidden sm:block">
+            <Link to="/profile" className="text-right hidden sm:block hover:opacity-70 transition-opacity">
               <p className="text-xs font-bold leading-tight text-stone-900">{user.name}</p>
               <p className="text-[10px] text-stone-500 uppercase font-medium">{user.institution || 'Ghanian Student'}</p>
-            </div>
+            </Link>
+
+            <Link
+              to="/profile"
+              className="w-10 h-10 bg-emerald-800 rounded-full flex items-center justify-center text-white text-xs font-black hover:bg-emerald-900 transition-colors"
+              title="View profile"
+            >
+              {getInitials(user.name)}
+            </Link>
+
             <button
               onClick={handleLogout}
-              className="w-10 h-10 bg-stone-100 rounded-full border border-stone-200 flex items-center justify-center hover:bg-stone-200 transition-colors"
+              className="w-8 h-8 bg-stone-100 rounded-full border border-stone-200 flex items-center justify-center hover:bg-stone-200 transition-colors"
               title="Logout"
             >
-              <UserIcon className="w-5 h-5 text-stone-600" />
+              <LogOut className="w-3.5 h-3.5 text-stone-600" />
             </button>
           </div>
         </div>

@@ -31,6 +31,10 @@
     {
       "name": "Users",
       "description": "Authenticated user profile"
+    },
+    {
+      "name": "Boost",
+      "description": "Promote a survey to the top of the feed for 24 hours"
     }
   ],
   "paths": {
@@ -84,13 +88,95 @@
         ]
       }
     },
+    "/api/surveys/{surveyId}/boost": {
+      "post": {
+        "tags": [
+          "Boost"
+        ],
+        "summary": "Boost a survey",
+        "description": "Deducts 5 credits and promotes the survey to the top of the feed for 24 hours. Only the survey owner may boost. A survey with an active boost cannot be double-boosted.",
+        "operationId": "boost",
+        "parameters": [
+          {
+            "name": "surveyId",
+            "in": "path",
+            "description": "Survey UUID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Boost applied",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoostResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid JWT token"
+          },
+          "402": {
+            "description": "Insufficient credits",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Requester does not own the survey",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Survey not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Survey already has an active boost",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/surveys/{id}/respond": {
       "post": {
         "tags": [
           "Surveys"
         ],
         "summary": "Submit a response to a survey",
-        "description": "Saves the user's answers and atomically awards +1 credit. A user cannot respond to their own survey or respond more than once.",
+        "description": "Saves the user's answers and atomically awards credits equal to the survey's credit value. A user cannot respond to their own survey or respond more than once.",
         "operationId": "submitResponse",
         "parameters": [
           {
@@ -116,7 +202,14 @@
         },
         "responses": {
           "201": {
-            "description": "Response submitted and credit awarded"
+            "description": "Response submitted and credit awarded",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmitResponseDto"
+                }
+              }
+            }
           },
           "400": {
             "description": "Validation error",
@@ -153,61 +246,6 @@
           },
           "409": {
             "description": "Already responded to this survey",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/api/surveys/{id}/boost": {
-      "post": {
-        "tags": [
-          "Surveys"
-        ],
-        "summary": "Boost a survey",
-        "description": "Deducts 5 credits from the owner and promotes the survey to the top of the feed for 24 hours. Only the survey owner can boost their own survey.",
-        "operationId": "boostSurvey",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Survey UUID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Survey boosted"
-          },
-          "401": {
-            "description": "Missing or invalid JWT token"
-          },
-          "403": {
-            "description": "Not the survey owner or insufficient credits",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Survey not found",
             "content": {
               "*/*": {
                 "schema": {
@@ -378,36 +416,6 @@
         }
       }
     },
-    "/api/users/me": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "summary": "Get current user profile",
-        "description": "Returns the authenticated user's name, email, and current credit balance.",
-        "operationId": "getMe",
-        "responses": {
-          "200": {
-            "description": "Profile returned",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserSummaryResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid JWT token"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
     "/api/surveys/{id}": {
       "get": {
         "tags": [
@@ -451,6 +459,116 @@
                 }
               }
             }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Surveys"
+        ],
+        "summary": "Update survey status",
+        "description": "Transitions the survey to a new status. Valid moves: DRAFT→ACTIVE (publish), ACTIVE→CLOSED (close), CLOSED→ACTIVE (re-open). Only the owner may call this.",
+        "operationId": "updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Survey UUID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchSurveyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveySummaryResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid JWT token"
+          },
+          "403": {
+            "description": "Caller is not the survey owner",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Survey not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Survey is already in the requested status",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get current user profile",
+        "description": "Returns the authenticated user's name, email, and current credit balance.",
+        "operationId": "getMe",
+        "responses": {
+          "200": {
+            "description": "Profile returned",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserSummaryResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid JWT token"
           }
         },
         "security": [
@@ -783,6 +901,14 @@
             "type": "integer",
             "format": "int32"
           },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "ACTIVE",
+              "CLOSED"
+            ]
+          },
           "questions": {
             "type": "array",
             "items": {
@@ -893,11 +1019,23 @@
             "type": "integer",
             "format": "int32"
           },
+          "actualResponseCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "ACTIVE",
+              "CLOSED"
+            ]
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
           },
-          "boostExpiry": {
+          "boostExpiresAt": {
             "type": "string",
             "format": "date-time"
           },
@@ -957,6 +1095,27 @@
             "additionalProperties": {
               "type": "string"
             }
+          },
+          "balance": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "boostExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "BoostResponseDto": {
+        "type": "object",
+        "properties": {
+          "newBalance": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "boostExpiresAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -967,14 +1126,8 @@
             "type": "string",
             "format": "uuid"
           },
-          "answerText": {
+          "answerValue": {
             "type": "string"
-          },
-          "selectedOptions": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
           }
         },
         "required": [
@@ -990,11 +1143,24 @@
               "$ref": "#/components/schemas/AnswerRequest"
             },
             "minItems": 1
+          },
+          "timeToCompleteSeconds": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "required": [
           "answers"
         ]
+      },
+      "SubmitResponseDto": {
+        "type": "object",
+        "properties": {
+          "newBalance": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
       },
       "PurchaseRequest": {
         "type": "object",
@@ -1060,7 +1226,7 @@
       "RegisterRequest": {
         "type": "object",
         "properties": {
-          "name": {
+          "fullName": {
             "type": "string",
             "minLength": 1
           },
@@ -1075,15 +1241,64 @@
             "minLength": 8
           },
           "institution": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "fieldOfStudy": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
+          },
+          "academicLevel": {
+            "type": "string",
+            "enum": [
+              "UNDERGRADUATE",
+              "POSTGRADUATE_MASTERS",
+              "POSTGRADUATE_PHD",
+              "LECTURER",
+              "RESEARCHER",
+              "OTHER"
+            ]
+          },
+          "yearOfStudy": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "NON_BINARY",
+              "PREFER_NOT_TO_SAY"
+            ]
+          },
+          "ageRange": {
+            "type": "string",
+            "enum": [
+              "UNDER_18",
+              "AGE_18_24",
+              "AGE_25_34",
+              "AGE_35_44",
+              "AGE_45_PLUS"
+            ]
+          },
+          "referralSource": {
+            "type": "string",
+            "enum": [
+              "WHATSAPP",
+              "SOCIAL_MEDIA",
+              "WORD_OF_MOUTH",
+              "SEARCH_ENGINE",
+              "OTHER"
+            ]
           }
         },
         "required": [
+          "academicLevel",
           "email",
-          "name",
+          "fieldOfStudy",
+          "fullName",
+          "institution",
           "password"
         ]
       },
@@ -1118,6 +1333,79 @@
           "email",
           "password"
         ]
+      },
+      "PatchSurveyRequest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "ACTIVE",
+              "CLOSED"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "SurveySummaryResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "estimatedTime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "targetResponses": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "actualResponseCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "ACTIVE",
+              "CLOSED"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "boostExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "boosted": {
+            "type": "boolean"
+          },
+          "creditValue": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/UserSummaryResponse"
+          }
+        }
       },
       "OptionDistributionDTO": {
         "type": "object",
@@ -1221,14 +1509,8 @@
               "LONG_TEXT"
             ]
           },
-          "answerText": {
+          "answerValue": {
             "type": "string"
-          },
-          "selectedOptions": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
           }
         }
       },
@@ -1272,7 +1554,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "submittedAt": {
+          "respondedAt": {
             "type": "string",
             "format": "date-time"
           },
@@ -1281,43 +1563,6 @@
             "items": {
               "$ref": "#/components/schemas/AnswerRowDTO"
             }
-          }
-        }
-      },
-      "SurveySummaryResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "title": {
-            "type": "string"
-          },
-          "category": {
-            "type": "string"
-          },
-          "estimatedTime": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "targetResponses": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "boosted": {
-            "type": "boolean"
-          },
-          "creditValue": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "owner": {
-            "$ref": "#/components/schemas/UserSummaryResponse"
           }
         }
       },
