@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Coins, CreditCard, ChevronRight, CheckCircle2, Loader2, Sparkles } from 'lucide-react';
+import {CreditCard, ChevronRight, CheckCircle2, Loader2, Sparkles } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';

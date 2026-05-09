@@ -13,11 +13,6 @@ import {
   Eye,
   Pencil,
   ChevronLeft,
-  CheckSquare,
-  List,
-  Hash,
-  Type,
-  MessageSquare,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { cn } from '../lib/utils';

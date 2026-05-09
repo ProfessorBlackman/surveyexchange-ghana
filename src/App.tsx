@@ -39,7 +39,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <Toaster position="bottom-right" />
       <BrowserRouter>
-        <div className="min-h-screen w-full overflow-x-hidden bg-stone-50 flex flex-col font-sans text-stone-900">
+        <div className="min-h-screen w-full overflow-x-auto bg-stone-50 flex flex-col font-sans text-stone-900">
           <Navbar />
           <main className="grow flex flex-col">
             <Routes>
