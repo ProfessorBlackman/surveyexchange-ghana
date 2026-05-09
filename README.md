@@ -1,6 +1,6 @@
 ## Run Locally
 
-**Prerequisites:**  Node.js
+**Prerequisites:**  Node.js and pnpm
 
 
 1. Install dependencies:
