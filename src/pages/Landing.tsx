@@ -20,6 +20,12 @@ export default function Landing() {
           </Link>
           <div className="flex items-center gap-3 sm:gap-4">
             <Link
+              to="/docs"
+              className="text-xs font-bold uppercase tracking-widest text-stone-600 hover:text-stone-900 transition-colors hidden sm:inline"
+            >
+              Docs
+            </Link>
+            <Link
               to="/login"
               className="text-xs font-bold uppercase tracking-widest text-stone-600 hover:text-stone-900 transition-colors"
             >

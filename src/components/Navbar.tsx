@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { LogOut, Coins, PlusCircle, Menu, X, User, LayoutDashboard, Rss } from 'lucide-react';
+import { LogOut, Coins, PlusCircle, Menu, X, User, LayoutDashboard, Rss, BookOpen } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 function getInitials(name: string): string {
@@ -86,6 +86,7 @@ export default function Navbar() {
             <div className="hidden sm:flex sm:gap-6">
               <Link to="/" className={navLinkClass('/')}>Browse</Link>
               <Link to="/dashboard" className={navLinkClass('/dashboard')}>Dashboard</Link>
+              <Link to="/docs" className={navLinkClass('/docs')}>Docs</Link>
             </div>
           </div>
 
@@ -200,6 +201,10 @@ export default function Navbar() {
           <Link to="/dashboard" className={mobileNavLinkClass('/dashboard')}>
             <LayoutDashboard className="w-4 h-4 shrink-0" aria-hidden="true" />
             Dashboard
+          </Link>
+          <Link to="/docs" className={mobileNavLinkClass('/docs')}>
+            <BookOpen className="w-4 h-4 shrink-0" aria-hidden="true" />
+            Documentation
           </Link>
           <Link to="/create" className={mobileNavLinkClass('/create')}>
             <PlusCircle className="w-4 h-4 text-emerald-700 shrink-0" aria-hidden="true" />
