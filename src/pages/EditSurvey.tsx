@@ -370,7 +370,7 @@ export default function EditSurvey() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-20 flex flex-col items-center gap-4">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-20 flex flex-col items-center gap-4">
         <div className="w-12 h-12 border-4 border-stone-100 border-t-emerald-800 rounded-full animate-spin" />
         <p className="text-stone-400 text-sm animate-pulse">Loading survey…</p>
       </div>
@@ -378,10 +378,10 @@ export default function EditSurvey() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 pb-20">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-4 sm:pt-6 pb-24">
 
       {/* Sticky header */}
-      <div className="sticky top-16 z-40 bg-stone-50 border-b border-stone-200 -mx-4 px-4 py-3 mb-8 flex items-center gap-4 flex-wrap">
+      <div className="sticky top-16 z-40 bg-stone-50 border-b border-stone-200 py-3 mb-8 flex items-center gap-2 md:gap-4 flex-wrap">
         <Link
           to="/dashboard"
           className="flex items-center gap-1.5 text-stone-400 hover:text-stone-700 transition-colors shrink-0"
@@ -394,7 +394,7 @@ export default function EditSurvey() {
           <p className="text-sm font-bold text-stone-700 truncate">{title || 'Untitled survey'}</p>
         </div>
 
-        <span className={cn('px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest', STATUS_STYLES[status])}>
+        <span className={cn('px-2.5 py-1 rounded-full text-[11px] font-black uppercase tracking-widest', STATUS_STYLES[status])}>
           {status}
         </span>
 
@@ -568,9 +568,10 @@ export default function EditSurvey() {
                     <button
                       type="button"
                       onClick={() => removeQuestion(qIdx)}
-                      className="absolute top-4 right-4 p-2 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                      aria-label={`Remove question ${qIdx + 1}`}
+                      className="absolute top-4 right-4 p-2 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4" aria-hidden="true" />
                     </button>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -612,10 +613,11 @@ export default function EditSurvey() {
                         </label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {q.options?.map((opt, oIdx) => (
-                            <div key={oIdx} className="flex items-center gap-2 group/opt">
+                            <div key={oIdx} className="flex items-center gap-2">
                               <input
                                 type="text"
                                 value={opt}
+                                aria-label={`Option ${oIdx + 1} for question ${qIdx + 1}`}
                                 onChange={(e) => updateOption(qIdx, oIdx, e.target.value)}
                                 className="grow px-4 py-2 bg-stone-50 border border-stone-100 rounded-xl focus:ring-1 focus:ring-emerald-500 outline-none text-sm"
                               />
@@ -623,9 +625,10 @@ export default function EditSurvey() {
                                 <button
                                   type="button"
                                   onClick={() => removeOption(qIdx, oIdx)}
-                                  className="p-1.5 text-stone-300 hover:text-red-500 opacity-0 group-hover/opt:opacity-100 transition-all"
+                                  aria-label={`Remove option ${oIdx + 1}`}
+                                  className="p-1.5 text-stone-300 hover:text-red-500 transition-all shrink-0 cursor-pointer"
                                 >
-                                  <X className="w-4 h-4" />
+                                  <X className="w-4 h-4" aria-hidden="true" />
                                 </button>
                               )}
                             </div>
@@ -653,10 +656,10 @@ export default function EditSurvey() {
             </div>
 
             {/* Bottom save bar */}
-            <div className="flex items-center justify-end gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-end gap-3 pt-4">
               <Link
                 to="/dashboard"
-                className="px-6 py-3 text-stone-500 font-bold hover:text-stone-900 transition-all text-sm"
+                className="px-6 py-3 text-stone-500 font-bold hover:text-stone-900 transition-all text-sm text-center sm:text-left"
               >
                 Back to Dashboard
               </Link>
@@ -664,7 +667,7 @@ export default function EditSurvey() {
                 type="button"
                 onClick={handleSave}
                 disabled={saving || questions.length === 0}
-                className="flex items-center gap-2 px-8 py-3 bg-emerald-600 text-white font-bold rounded-2xl hover:bg-emerald-700 shadow-xl shadow-emerald-200 transition-all disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-8 py-3 bg-emerald-600 text-white font-bold rounded-2xl hover:bg-emerald-700 shadow-xl shadow-emerald-200 transition-all disabled:opacity-50"
               >
                 <Save className="w-5 h-5" />
                 {saving ? 'Saving…' : 'Save Changes'}

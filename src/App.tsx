@@ -39,12 +39,12 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <Toaster position="bottom-right" />
       <BrowserRouter>
-        <div className="min-h-screen bg-stone-50 flex flex-col font-sans text-stone-900">
+        <div className="min-h-screen w-full overflow-x-hidden bg-stone-50 flex flex-col font-sans text-stone-900">
           <Navbar />
-          <main className="flex-grow flex flex-col">
+          <main className="grow flex flex-col">
             <Routes>
-              <Route path="/login" element={!user ? <div className="flex-grow flex items-center justify-center py-12"><Login /></div> : <Navigate to="/" />} />
-              <Route path="/register" element={!user ? <div className="flex-grow flex items-center justify-center py-12"><Register /></div> : <Navigate to="/" />} />
+              <Route path="/login" element={user ? <Navigate to="/" /> : <div className="grow flex items-center justify-center py-12"><Login /></div>} />
+              <Route path="/register" element={user ? <Navigate to="/" /> : <div className="grow flex items-center justify-center py-12"><Register /></div>} />
               
               <Route path="/" element={user ? <Feed /> : <Landing />} />
               <Route path="/create" element={user ? <CreateSurvey /> : <Navigate to="/login" />} />

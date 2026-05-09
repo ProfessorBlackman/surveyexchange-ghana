@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import {
@@ -6,11 +6,6 @@ import {
   Trash2,
   Save,
   X,
-  List,
-  Hash,
-  Type,
-  CheckSquare,
-  MessageSquare,
   Clock,
   Tag,
   Users,
@@ -49,40 +44,29 @@ export default function CreateSurvey() {
   const addQuestion = () => {
     setQuestions((prev) => [
       ...prev,
-      {
-        text: '',
-        questionType: 'MULTIPLE_CHOICE',
-        options: ['Option 1', 'Option 2'],
-        orderIndex: prev.length,
-      },
+      { text: '', questionType: 'MULTIPLE_CHOICE', options: ['Option 1', 'Option 2'], orderIndex: prev.length },
     ]);
   };
 
-  const removeQuestion = (index: number) => {
+  const removeQuestion = (index: number) =>
     setQuestions((prev) => prev.filter((_, i) => i !== index));
-  };
 
-  const updateQuestion = (index: number, field: string, value: unknown) => {
+  const updateQuestion = (index: number, field: string, value: unknown) =>
     setQuestions((prev) => {
       const updated = [...prev];
       updated[index] = { ...updated[index], [field]: value };
       return updated;
     });
-  };
 
-  const addOption = (qIndex: number) => {
+  const addOption = (qIndex: number) =>
     setQuestions((prev) => {
       const updated = [...prev];
       const opts = updated[qIndex].options ?? [];
-      updated[qIndex] = {
-        ...updated[qIndex],
-        options: [...opts, `Option ${opts.length + 1}`],
-      };
+      updated[qIndex] = { ...updated[qIndex], options: [...opts, `Option ${opts.length + 1}`] };
       return updated;
     });
-  };
 
-  const removeOption = (qIndex: number, oIndex: number) => {
+  const removeOption = (qIndex: number, oIndex: number) =>
     setQuestions((prev) => {
       const updated = [...prev];
       updated[qIndex] = {
@@ -91,9 +75,8 @@ export default function CreateSurvey() {
       };
       return updated;
     });
-  };
 
-  const updateOption = (qIndex: number, oIndex: number, value: string) => {
+  const updateOption = (qIndex: number, oIndex: number, value: string) =>
     setQuestions((prev) => {
       const updated = [...prev];
       const opts = [...updated[qIndex].options!];
@@ -101,7 +84,6 @@ export default function CreateSurvey() {
       updated[qIndex] = { ...updated[qIndex], options: opts };
       return updated;
     });
-  };
 
   const buildPayload = (status: 'DRAFT' | 'ACTIVE') => ({
     title,
@@ -121,10 +103,7 @@ export default function CreateSurvey() {
 
   const handleSaveDraft = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (questions.length === 0) {
-      toast.error('Please add at least one question');
-      return;
-    }
+    if (questions.length === 0) { toast.error('Please add at least one question'); return; }
     setDraftLoading(true);
     try {
       await api.post('/surveys', buildPayload('DRAFT'));
@@ -139,10 +118,7 @@ export default function CreateSurvey() {
 
   const handlePublish = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (questions.length === 0) {
-      toast.error('Please add at least one question');
-      return;
-    }
+    if (questions.length === 0) { toast.error('Please add at least one question'); return; }
     setPublishLoading(true);
     try {
       await api.post('/surveys', buildPayload('ACTIVE'));
@@ -156,57 +132,60 @@ export default function CreateSurvey() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 pb-20">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-24">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">
           Create New Survey
         </h1>
-        <p className="text-gray-500 mt-2">
+        <p className="text-stone-500 mt-2 text-sm sm:text-base">
           Design your research tool and start gathering insights.
         </p>
       </div>
 
-      <form className="space-y-8">
+      <form className="space-y-6 sm:space-y-8">
         {/* Basic Info */}
-        <section className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <section className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-stone-100">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
             <div className="md:col-span-2">
-              <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+              <label htmlFor="survey-title" className="block text-sm font-bold text-stone-700 mb-2 uppercase tracking-wide">
                 Survey Title
               </label>
               <input
+                id="survey-title"
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-xl font-bold"
+                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-lg sm:text-xl font-bold"
                 placeholder="e.g., Student Perception of AI in Education"
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+              <label htmlFor="survey-description" className="block text-sm font-bold text-stone-700 mb-2 uppercase tracking-wide">
                 Description
               </label>
               <textarea
+                id="survey-description"
                 required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all resize-none"
                 placeholder="Briefly explain what your survey is about..."
               />
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
-                <Tag className="w-4 h-4" />
+              <label htmlFor="survey-category" className="flex items-center gap-2 text-sm font-bold text-stone-700 mb-2 uppercase tracking-wide">
+                <Tag className="w-4 h-4" aria-hidden="true" />
                 Category
               </label>
               <select
+                id="survey-category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none"
+                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none cursor-pointer"
               >
                 <option>Academic</option>
                 <option>Social</option>
@@ -217,103 +196,107 @@ export default function CreateSurvey() {
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
-                <Clock className="w-4 h-4" />
+              <label htmlFor="survey-time" className="flex items-center gap-2 text-sm font-bold text-stone-700 mb-2 uppercase tracking-wide">
+                <Clock className="w-4 h-4" aria-hidden="true" />
                 Est. Time (minutes)
               </label>
               <input
+                id="survey-time"
                 type="number"
                 required
                 min={1}
                 value={estimatedTime}
-                onChange={(e) => setEstimatedTime(parseInt(e.target.value))}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none"
+                onChange={(e) => setEstimatedTime(parseInt(e.target.value) || 1)}
+                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none"
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
-                <Users className="w-4 h-4" />
+              <label htmlFor="survey-target" className="flex items-center gap-2 text-sm font-bold text-stone-700 mb-2 uppercase tracking-wide">
+                <Users className="w-4 h-4" aria-hidden="true" />
                 Target Responses
               </label>
               <input
+                id="survey-target"
                 type="number"
                 required
                 min={1}
                 value={targetResponses}
                 onChange={(e) =>
-                  setTargetResponses(
-                    e.target.value === '' ? '' : parseInt(e.target.value)
-                  )
+                  setTargetResponses(e.target.value === '' ? '' : parseInt(e.target.value))
                 }
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none"
+                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none"
                 placeholder="e.g., 100"
               />
-              <p className="mt-1.5 text-xs text-gray-400">
-                How many responses do you want to collect?
-              </p>
+              <p className="mt-1.5 text-xs text-stone-400">How many responses do you want to collect?</p>
             </div>
           </div>
         </section>
 
         {/* Questions */}
-        <div className="space-y-6">
+        <div className="space-y-5 sm:space-y-6">
           <div ref={addButtonRowRef} className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">Questions</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-stone-900">Questions</h2>
             <button
               type="button"
               onClick={addQuestion}
-              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition-all font-bold flex items-center gap-2"
+              className="px-3 sm:px-4 py-2 bg-stone-100 text-stone-700 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition-all font-bold flex items-center gap-2 text-sm cursor-pointer"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-4 h-4" aria-hidden="true" />
               Add Question
             </button>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-5 sm:space-y-6">
             <AnimatePresence>
               {questions.map((q, qIndex) => (
                 <motion.div
                   key={qIndex}
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.97 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 relative group"
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ duration: 0.15 }}
+                  className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-stone-100 relative"
                 >
                   <button
                     type="button"
                     onClick={() => removeQuestion(qIndex)}
-                    className="absolute top-4 right-4 p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                    aria-label={`Remove question ${qIndex + 1}`}
+                    className="absolute top-4 right-4 p-2 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4 h-4" aria-hidden="true" />
                   </button>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 pr-10 md:pr-0">
                     <div className="md:col-span-2">
-                      <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">
+                      <label
+                        htmlFor={`question-text-${qIndex}`}
+                        className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-1"
+                      >
                         Question {qIndex + 1}
                       </label>
                       <input
+                        id={`question-text-${qIndex}`}
                         type="text"
                         required
                         value={q.text}
-                        onChange={(e) =>
-                          updateQuestion(qIndex, 'text', e.target.value)
-                        }
-                        className="w-full px-0 py-2 border-b-2 border-transparent focus:border-emerald-500 bg-transparent outline-none transition-all text-lg font-semibold"
+                        onChange={(e) => updateQuestion(qIndex, 'text', e.target.value)}
+                        className="w-full px-0 py-2 border-b-2 border-transparent focus:border-emerald-500 bg-transparent outline-none transition-all text-base sm:text-lg font-semibold"
                         placeholder="Type your question here..."
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">
+                      <label
+                        htmlFor={`question-type-${qIndex}`}
+                        className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-1"
+                      >
                         Type
                       </label>
                       <select
+                        id={`question-type-${qIndex}`}
                         value={q.questionType}
-                        onChange={(e) =>
-                          updateQuestion(qIndex, 'questionType', e.target.value)
-                        }
-                        className="w-full py-2 bg-transparent outline-none border-b-2 border-transparent focus:border-emerald-500 font-semibold cursor-pointer"
+                        onChange={(e) => updateQuestion(qIndex, 'questionType', e.target.value)}
+                        className="w-full py-2 bg-transparent outline-none border-b-2 border-transparent focus:border-emerald-500 font-semibold cursor-pointer text-sm sm:text-base"
                       >
                         <option value="MULTIPLE_CHOICE">Multiple Choice</option>
                         <option value="CHECKBOX">Checkboxes</option>
@@ -325,34 +308,30 @@ export default function CreateSurvey() {
                     </div>
                   </div>
 
-                  {(q.questionType === 'MULTIPLE_CHOICE' ||
-                    q.questionType === 'CHECKBOX') && (
-                    <div className="mt-8 space-y-3">
-                      <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                  {(q.questionType === 'MULTIPLE_CHOICE' || q.questionType === 'CHECKBOX') && (
+                    <div className="mt-6 sm:mt-8 space-y-3">
+                      <p className="text-xs font-black text-stone-400 uppercase tracking-widest mb-2">
                         Options
-                      </label>
+                      </p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {q.options?.map((opt, oIndex) => (
-                          <div
-                            key={oIndex}
-                            className="flex items-center gap-2 group/opt"
-                          >
+                          <div key={oIndex} className="flex items-center gap-2">
                             <input
                               type="text"
                               required
                               value={opt}
-                              onChange={(e) =>
-                                updateOption(qIndex, oIndex, e.target.value)
-                              }
-                              className="grow px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl focus:ring-1 focus:ring-emerald-500 outline-none text-sm"
+                              aria-label={`Option ${oIndex + 1} for question ${qIndex + 1}`}
+                              onChange={(e) => updateOption(qIndex, oIndex, e.target.value)}
+                              className="grow px-4 py-2 bg-stone-50 border border-stone-100 rounded-xl focus:ring-1 focus:ring-emerald-500 outline-none text-sm"
                             />
                             {q.options!.length > 1 && (
                               <button
                                 type="button"
                                 onClick={() => removeOption(qIndex, oIndex)}
-                                className="p-1.5 text-gray-300 hover:text-red-500 opacity-0 group-hover/opt:opacity-100 transition-all"
+                                aria-label={`Remove option ${oIndex + 1}`}
+                                className="p-1.5 text-stone-300 hover:text-red-500 transition-all shrink-0 cursor-pointer"
                               >
-                                <X className="w-4 h-4" />
+                                <X className="w-4 h-4" aria-hidden="true" />
                               </button>
                             )}
                           </div>
@@ -361,9 +340,9 @@ export default function CreateSurvey() {
                       <button
                         type="button"
                         onClick={() => addOption(qIndex)}
-                        className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1.5 mt-4"
+                        className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1.5 mt-3 cursor-pointer"
                       >
-                        <Plus className="w-3 h-3" />
+                        <Plus className="w-3 h-3" aria-hidden="true" />
                         Add Option
                       </button>
                     </div>
@@ -373,8 +352,8 @@ export default function CreateSurvey() {
             </AnimatePresence>
 
             {questions.length === 0 && (
-              <div className="bg-gray-50 rounded-3xl p-12 text-center border-2 border-dashed border-gray-200">
-                <p className="text-gray-400">
+              <div className="bg-stone-50 rounded-3xl p-10 sm:p-12 text-center border-2 border-dashed border-stone-200">
+                <p className="text-stone-400 text-sm">
                   Click "Add Question" to start building your survey.
                 </p>
               </div>
@@ -383,11 +362,11 @@ export default function CreateSurvey() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-4 pt-8">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-end gap-3 pt-4 sm:pt-8">
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="px-6 py-3 text-gray-600 font-bold hover:text-gray-900 transition-all"
+            className="px-6 py-3 text-stone-600 font-bold hover:text-stone-900 transition-all text-center cursor-pointer text-sm"
           >
             Cancel
           </button>
@@ -395,24 +374,24 @@ export default function CreateSurvey() {
             type="button"
             onClick={handleSaveDraft}
             disabled={loading}
-            className="px-6 py-3 bg-stone-100 text-stone-700 font-bold rounded-2xl hover:bg-stone-200 transition-all disabled:opacity-50 flex items-center gap-2"
+            className="px-6 py-3 bg-stone-100 text-stone-700 font-bold rounded-2xl hover:bg-stone-200 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm cursor-pointer"
           >
-            <FileText className="w-4 h-4" />
-            {draftLoading ? 'Saving...' : 'Save as Draft'}
+            <FileText className="w-4 h-4" aria-hidden="true" />
+            {draftLoading ? 'Saving…' : 'Save as Draft'}
           </button>
           <button
             type="button"
             onClick={handlePublish}
             disabled={loading}
-            className="px-8 py-3 bg-emerald-600 text-white font-bold rounded-2xl hover:bg-emerald-700 shadow-xl shadow-emerald-200 transition-all disabled:opacity-50 flex items-center gap-2 text-lg"
+            className="px-6 sm:px-8 py-3 bg-emerald-600 text-white font-bold rounded-2xl hover:bg-emerald-700 shadow-xl shadow-emerald-200 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer"
           >
-            <Save className="w-5 h-5" />
-            {publishLoading ? 'Publishing...' : 'Save & Publish'}
+            <Save className="w-5 h-5" aria-hidden="true" />
+            {publishLoading ? 'Publishing…' : 'Save & Publish'}
           </button>
         </div>
       </form>
 
-      {/* Floating "Add Question" button — appears when the header row scrolls out of view */}
+      {/* Floating "Add Question" button */}
       <AnimatePresence>
         {showFloatingAdd && (
           <motion.button
@@ -422,9 +401,10 @@ export default function CreateSurvey() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 16 }}
             transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-            className="fixed bottom-8 right-8 z-50 flex items-center gap-2 px-5 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm rounded-2xl shadow-xl shadow-emerald-900/25 transition-colors"
+            className="fixed bottom-6 right-4 sm:bottom-8 sm:right-8 z-50 flex items-center gap-2 px-4 sm:px-5 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm rounded-2xl shadow-xl shadow-emerald-900/25 transition-colors cursor-pointer"
+            aria-label="Add new question"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-5 h-5" aria-hidden="true" />
             Add Question
           </motion.button>
         )}

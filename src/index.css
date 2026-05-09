@@ -10,6 +10,25 @@
   body {
     @apply antialiased text-stone-900 bg-stone-50;
   }
+
+  /* Global focus-visible ring — keyboard nav only, no mouse outline */
+  :focus-visible {
+    @apply outline-none ring-2 ring-emerald-600 ring-offset-2;
+  }
+
+  /* Remove default focus for mouse users */
+  :focus:not(:focus-visible) {
+    @apply outline-none;
+  }
+
+  /* Ensure minimum touch target height on interactive elements */
+  button, a {
+    @apply touch-action-manipulation;
+  }
+}
+
+@utility touch-action-manipulation {
+  touch-action: manipulation;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -18,5 +37,17 @@
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Skeleton shimmer animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f5f5f4 25%, #e7e5e4 50%, #f5f5f4 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }
 

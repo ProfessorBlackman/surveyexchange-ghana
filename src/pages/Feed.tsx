@@ -1,11 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import api from '../lib/api';
 import { Survey } from '../types';
-import { Clock, MessageSquare, TrendingUp, Filter, Search as SearchIcon, ArrowRight, User } from 'lucide-react';
+import { Search as SearchIcon, Heart, BookOpen, Wifi, BarChart2, FlaskConical, Globe } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
+
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  Health:           <Heart className="w-5 h-5" aria-hidden="true" />,
+  Academic:         <BookOpen className="w-5 h-5" aria-hidden="true" />,
+  Technology:       <Wifi className="w-5 h-5" aria-hidden="true" />,
+  'Market Research':<BarChart2 className="w-5 h-5" aria-hidden="true" />,
+  Social:           <Globe className="w-5 h-5" aria-hidden="true" />,
+  Science:          <FlaskConical className="w-5 h-5" aria-hidden="true" />,
+};
+
+const DEFAULT_ICON = <BarChart2 className="w-5 h-5" aria-hidden="true" />;
+
+function SurveySkeleton() {
+  return (
+    <div className="bg-white rounded-2xl border border-stone-200 p-5 sm:p-6 flex flex-col md:flex-row justify-between gap-4 md:gap-6">
+      <div className="flex gap-4 grow">
+        <div className="skeleton w-12 h-12 rounded-xl shrink-0" />
+        <div className="flex-1 space-y-2 py-0.5">
+          <div className="skeleton h-4 rounded w-2/3" />
+          <div className="skeleton h-3 rounded w-1/3" />
+        </div>
+      </div>
+      <div className="flex items-center gap-4 self-start md:self-center">
+        <div className="skeleton h-4 w-8 rounded" />
+        <div className="skeleton h-9 w-28 rounded-xl" />
+      </div>
+    </div>
+  );
+}
 
 export default function Feed() {
   const [surveys, setSurveys] = useState<Survey[]>([]);
@@ -18,9 +47,9 @@ export default function Feed() {
     const fetchSurveys = async () => {
       try {
         const res = await api.get('/surveys/feed');
-        setSurveys(res.data.content || res.data); // Support both for safety during transition
-      } catch (err) {
-        console.error('Failed to fetch surveys');
+        setSurveys(res.data.content || res.data);
+      } catch {
+        // silently fail — feed is best-effort
       } finally {
         setLoading(false);
       }
@@ -28,28 +57,39 @@ export default function Feed() {
     fetchSurveys();
   }, []);
 
-  const filteredSurveys = activeCategory === 'All' 
-    ? surveys 
+  const filteredSurveys = activeCategory === 'All'
+    ? surveys
     : surveys.filter(s => s.category === activeCategory);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 mb-8 sm:mb-10">
         <div>
-          <h1 className="text-4xl mt-8 font-black text-stone-900 tracking-tight mb-2 underline decoration-emerald-500/30 underline-offset-8">Available Surveys</h1>
-          <p className="text-stone-500 text-sm font-medium">Contribute to fellow researchers to earn academic credits.</p>
+          <h1 className="text-3xl sm:text-4xl font-black text-stone-900 tracking-tight mb-2 underline decoration-emerald-500/30 underline-offset-8">
+            Available Surveys
+          </h1>
+          <p className="text-stone-500 text-sm font-medium">
+            Contribute to fellow researchers to earn academic credits.
+          </p>
         </div>
-        
-        <div className="flex items-center gap-2 bg-stone-100 p-1 rounded-xl shrink-0">
-          {categories.slice(0, 4).map(cat => (
+
+        {/* Category pills — all visible, horizontal scroll on small screens */}
+        <div
+          className="flex items-center gap-1.5 bg-stone-100 p-1 rounded-xl overflow-x-auto scrollbar-hide shrink-0 max-w-full"
+          role="tablist"
+          aria-label="Filter by category"
+        >
+          {categories.map(cat => (
             <button
               key={cat}
+              role="tab"
+              aria-selected={activeCategory === cat}
               onClick={() => setActiveCategory(cat)}
               className={cn(
-                "px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap",
+                'px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer',
                 activeCategory === cat
-                  ? "bg-white text-stone-900 shadow-sm"
-                  : "text-stone-500 hover:text-stone-700"
+                  ? 'bg-white text-stone-900 shadow-sm'
+                  : 'text-stone-500 hover:text-stone-700'
               )}
             >
               {cat}
@@ -60,76 +100,80 @@ export default function Feed() {
 
       {loading ? (
         <div className="flex flex-col gap-4">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-2xl h-32 animate-pulse border border-stone-200" />
-          ))}
+          {[1, 2, 3, 4].map(i => <SurveySkeleton key={i} />)}
         </div>
       ) : filteredSurveys.length === 0 ? (
-        <div className="bg-white rounded-3xl p-16 text-center border border-stone-200 max-w-xl mx-auto shadow-sm">
-          <div className="w-16 h-16 bg-stone-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <SearchIcon className="w-8 h-8 text-stone-300" />
+        <div className="bg-white rounded-3xl p-12 sm:p-16 text-center border border-stone-200 max-w-xl mx-auto shadow-sm">
+          <div className="w-14 h-14 bg-stone-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <SearchIcon className="w-7 h-7 text-stone-300" aria-hidden="true" />
           </div>
           <h3 className="text-xl font-bold text-stone-900">Research pool is empty</h3>
-          <p className="text-stone-500 mt-2">Adjust your filters or check back in a few hours.</p>
+          <p className="text-stone-500 mt-2 text-sm">
+            Adjust your filters or check back in a few hours.
+          </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4" role="list">
           {filteredSurveys.map((survey, index) => (
             <motion.div
               key={survey.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.05 }}
+              role="listitem"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.04, duration: 0.2 }}
               className={cn(
-                "group relative p-6 border bg-white rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all",
-                survey.boosted 
-                  ? "border-amber-200 bg-amber-50/20 shadow-md shadow-amber-900/5" 
-                  : "border-stone-200 hover:border-emerald-600/30 hover:shadow-lg hover:shadow-stone-200/50"
+                'group relative p-5 sm:p-6 border bg-white rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 transition-all',
+                survey.boosted
+                  ? 'border-amber-200 bg-amber-50/20 shadow-md shadow-amber-900/5'
+                  : 'border-stone-200 hover:border-emerald-600/30 hover:shadow-lg hover:shadow-stone-200/50'
               )}
             >
               {survey.boosted && (
-                <div className="absolute -top-3 left-6 px-3 py-0.5 bg-amber-400 text-amber-950 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">
+                <div
+                  className="absolute -top-3 left-5 px-3 py-0.5 bg-amber-400 text-amber-950 text-[11px] font-black uppercase tracking-widest rounded-full shadow-sm"
+                  aria-label="Featured survey"
+                >
                   Featured
                 </div>
               )}
 
-              <div className="flex gap-5 flex-grow">
+              <div className="flex gap-4 grow min-w-0">
                 <div className={cn(
-                  "w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0 border",
-                  survey.boosted ? "bg-white border-amber-200" : "bg-stone-50 border-stone-200"
+                  'w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 border',
+                  survey.boosted ? 'bg-white border-amber-200 text-amber-600' : 'bg-stone-50 border-stone-200 text-stone-500'
                 )}>
-                  {survey.category === 'Health' ? '💊' : survey.category === 'Academic' ? '📚' : survey.category === 'Technology' ? '📡' : '📊'}
+                  {CATEGORY_ICONS[survey.category ?? ''] ?? DEFAULT_ICON}
                 </div>
-                <div>
-                  <h3 className="font-bold text-stone-900 mb-1 group-hover:text-emerald-800 transition-colors">
+                <div className="min-w-0">
+                  <h3 className="font-bold text-stone-900 mb-1 group-hover:text-emerald-800 transition-colors truncate">
                     {survey.title}
                   </h3>
-                  <p className="text-[11px] text-stone-500 font-medium flex items-center gap-2">
+                  <p className="text-xs text-stone-500 font-medium flex flex-wrap items-center gap-x-2 gap-y-0.5">
                     <span className="uppercase font-bold text-emerald-700">{survey.category}</span>
-                    <span className="text-stone-300">•</span>
-                    {survey.owner?.name}
-                    <span className="text-stone-300">•</span>
-                    {survey.estimatedTime} mins
+                    <span className="text-stone-300" aria-hidden="true">•</span>
+                    <span>{survey.owner?.name}</span>
+                    <span className="text-stone-300" aria-hidden="true">•</span>
+                    <span>{survey.estimatedTime} mins</span>
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-8 self-end md:self-center">
-                <div className="text-center">
+              <div className="flex items-center gap-6 sm:gap-8 self-start md:self-center shrink-0">
+                <div className="text-center" aria-label="Earn 1 credit">
                   <p className={cn(
-                    "text-lg font-mono font-bold leading-none",
-                    survey.boosted ? "text-amber-700" : "text-stone-700"
+                    'text-lg font-mono font-bold leading-none',
+                    survey.boosted ? 'text-amber-700' : 'text-stone-700'
                   )}>+1</p>
-                  <p className="text-[9px] text-stone-400 uppercase font-black tracking-tighter">Credit</p>
+                  <p className="text-[11px] text-stone-400 uppercase font-black tracking-tighter">Credit</p>
                 </div>
 
                 <Link
                   to={`/survey/${survey.id}`}
                   className={cn(
-                    "px-8 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
-                    survey.boosted 
-                      ? "bg-emerald-800 text-white hover:bg-emerald-900 shadow-lg shadow-emerald-900/20" 
-                      : "border border-emerald-800 text-emerald-800 hover:bg-emerald-50"
+                    'px-6 sm:px-8 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all whitespace-nowrap',
+                    survey.boosted
+                      ? 'bg-emerald-800 text-white hover:bg-emerald-900 shadow-lg shadow-emerald-900/20'
+                      : 'border border-emerald-800 text-emerald-800 hover:bg-emerald-50'
                   )}
                 >
                   Start Survey

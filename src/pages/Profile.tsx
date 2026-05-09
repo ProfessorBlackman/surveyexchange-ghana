@@ -23,7 +23,7 @@ const selectClass =
   'w-full pl-4 pr-8 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 outline-none transition-all text-sm font-medium appearance-none';
 const inputClass =
   'w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 outline-none transition-all text-sm font-medium';
-const labelClass = 'block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2';
+const labelClass = 'block text-xs font-black text-stone-400 uppercase tracking-widest mb-2';
 
 interface ProfileForm {
   institution: string;
@@ -191,7 +191,7 @@ export default function Profile() {
   ];
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 space-y-8">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8">
 
       {/* Header card */}
       <div className="bg-emerald-900 rounded-3xl p-8 flex flex-col sm:flex-row items-start sm:items-center gap-6 shadow-xl shadow-emerald-900/20">
@@ -207,12 +207,12 @@ export default function Profile() {
           )}
           <div className="flex flex-wrap items-center gap-3 mt-3">
             {academicSummary && (
-              <span className="px-3 py-1 bg-white/10 border border-white/20 rounded-full text-[10px] font-black text-emerald-200 uppercase tracking-widest">
+              <span className="px-3 py-1 bg-white/10 border border-white/20 rounded-full text-[11px] font-black text-emerald-200 uppercase tracking-widest">
                 {academicSummary}
               </span>
             )}
             {memberSince && (
-              <span className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest">
+              <span className="text-emerald-500 text-[11px] font-bold uppercase tracking-widest">
                 Member since {memberSince}
               </span>
             )}
@@ -221,7 +221,7 @@ export default function Profile() {
         <div className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-2xl px-5 py-3 shrink-0">
           <Coins className="w-4 h-4 text-emerald-300" />
           <span className="text-2xl font-black font-mono text-white">{user?.creditBalance}</span>
-          <span className="text-emerald-400 text-[10px] font-black uppercase tracking-widest">CR</span>
+          <span className="text-emerald-400 text-[11px] font-black uppercase tracking-widest">CR</span>
         </div>
       </div>
 
@@ -238,7 +238,7 @@ export default function Profile() {
             <p className={cn('text-2xl font-black font-mono', loadingStats ? 'opacity-30' : '', card.color)}>
               {loadingStats ? '—' : card.value}
             </p>
-            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mt-1">
+            <p className="text-xs font-black text-stone-400 uppercase tracking-widest mt-1">
               {card.label}
             </p>
           </div>
@@ -336,9 +336,9 @@ export default function Profile() {
             <button
               type="button"
               onClick={() => setOptionalOpen((p) => !p)}
-              className="w-full flex items-center justify-between px-5 py-3.5 bg-stone-50 hover:bg-stone-100 transition-colors text-left"
+              className="w-full flex items-center justify-between px-5 py-3.5 bg-stone-50 hover:bg-stone-100 transition-colors text-left cursor-pointer"
             >
-              <span className="text-[10px] font-black uppercase tracking-widest text-stone-500">
+              <span className="text-xs font-black uppercase tracking-widest text-stone-500">
                 Personal Info (optional)
               </span>
               <ChevronDown
@@ -405,7 +405,7 @@ export default function Profile() {
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-2 px-6 py-2.5 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-md shadow-emerald-900/10 disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2.5 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-md shadow-emerald-900/10 disabled:opacity-50 cursor-pointer"
             >
               <Save className="w-3.5 h-3.5" />
               {saving ? 'Saving...' : 'Save Changes'}
@@ -423,21 +423,21 @@ export default function Profile() {
         </div>
         <div className="divide-y divide-stone-100">
           <div className="px-8 py-4 flex items-center justify-between">
-            <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest">
+            <span className="text-xs font-black text-stone-400 uppercase tracking-widest">
               Email
             </span>
             <span className="text-sm font-medium text-stone-700">{user?.email}</span>
           </div>
           {memberSince && (
             <div className="px-8 py-4 flex items-center justify-between">
-              <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest">
+              <span className="text-xs font-black text-stone-400 uppercase tracking-widest">
                 Member Since
               </span>
               <span className="text-sm font-medium text-stone-700">{memberSince}</span>
             </div>
           )}
           <div className="px-8 py-4 flex items-center justify-between">
-            <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest">
+            <span className="text-xs font-black text-stone-400 uppercase tracking-widest">
               Account ID
             </span>
             <span className="text-xs font-mono text-stone-400">
