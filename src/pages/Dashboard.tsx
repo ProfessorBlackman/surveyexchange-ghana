@@ -11,6 +11,8 @@ import {
   RotateCcw,
   Pencil,
   Zap,
+  Link2,
+  Check,
 } from 'lucide-react';
 import { format, formatDistanceToNow, isAfter, parseISO } from 'date-fns';
 import { motion, AnimatePresence } from 'motion/react';
@@ -79,6 +81,7 @@ export default function Dashboard() {
   const { user, updateCredits } = useAuthStore();
   const [boostingId, setBoostingId] = useState<string | null>(null);
   const [statusLoadingId, setStatusLoadingId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const fetchDashboardData = async () => {
     try {
@@ -124,6 +127,14 @@ export default function Dashboard() {
     } finally {
       setBoostingId(null);
     }
+  };
+
+  const handleShare = (surveyId: string) => {
+    const url = `${window.location.origin}/survey/${surveyId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedId(surveyId);
+      setTimeout(() => setCopiedId(null), 2000);
+    }).catch(() => toast.error('Could not copy link'));
   };
 
   const handleStatusChange = async (surveyId: string, newStatus: 'ACTIVE' | 'CLOSED') => {
@@ -354,6 +365,21 @@ export default function Dashboard() {
                           </button>
                         )}
 
+                        <button
+                          onClick={() => handleShare(survey.id)}
+                          aria-label={copiedId === survey.id ? 'Link copied' : `Copy link to ${survey.title}`}
+                          className={cn(
+                            'p-2 border rounded-lg transition-all shadow-sm cursor-pointer',
+                            copiedId === survey.id
+                              ? 'border-emerald-300 bg-emerald-50 text-emerald-600'
+                              : 'border-stone-200 text-stone-400 hover:text-stone-700 hover:border-stone-300 hover:bg-stone-50'
+                          )}
+                        >
+                          {copiedId === survey.id
+                            ? <Check className="w-4 h-4" aria-hidden="true" />
+                            : <Link2 className="w-4 h-4" aria-hidden="true" />
+                          }
+                        </button>
                         <Link
                           to={`/survey/${survey.id}/edit`}
                           aria-label={`Edit ${survey.title}`}

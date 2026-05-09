@@ -10,10 +10,12 @@ import {
   Tag,
   Users,
   FileText,
+  Upload,
 } from 'lucide-react';
 import { Question } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import toast from 'react-hot-toast';
+import ImportQuestionsModal from '../components/ImportQuestionsModal';
 
 export default function CreateSurvey() {
   const [title, setTitle] = useState('');
@@ -25,6 +27,7 @@ export default function CreateSurvey() {
   const [draftLoading, setDraftLoading] = useState(false);
   const [publishLoading, setPublishLoading] = useState(false);
   const [showFloatingAdd, setShowFloatingAdd] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const addButtonRowRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -40,6 +43,11 @@ export default function CreateSurvey() {
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  const handleImportQuestions = (imported: Question[]) => {
+    setQuestions(prev => [...prev, ...imported]);
+    toast.success(`${imported.length} question${imported.length !== 1 ? 's' : ''} imported`);
+  };
 
   const addQuestion = () => {
     setQuestions((prev) => [
@@ -235,16 +243,26 @@ export default function CreateSurvey() {
 
         {/* Questions */}
         <div className="space-y-5 sm:space-y-6">
-          <div ref={addButtonRowRef} className="flex items-center justify-between">
+          <div ref={addButtonRowRef} className="flex items-center justify-between gap-2">
             <h2 className="text-lg sm:text-xl font-bold text-stone-900">Questions</h2>
-            <button
-              type="button"
-              onClick={addQuestion}
-              className="px-3 sm:px-4 py-2 bg-stone-100 text-stone-700 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition-all font-bold flex items-center gap-2 text-sm cursor-pointer"
-            >
-              <Plus className="w-4 h-4" aria-hidden="true" />
-              Add Question
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowImportModal(true)}
+                className="px-3 sm:px-4 py-2 border border-stone-200 text-stone-600 rounded-xl hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700 transition-all font-bold flex items-center gap-2 text-sm cursor-pointer"
+              >
+                <Upload className="w-4 h-4" aria-hidden="true" />
+                <span className="hidden sm:inline">Import</span>
+              </button>
+              <button
+                type="button"
+                onClick={addQuestion}
+                className="px-3 sm:px-4 py-2 bg-stone-100 text-stone-700 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition-all font-bold flex items-center gap-2 text-sm cursor-pointer"
+              >
+                <Plus className="w-4 h-4" aria-hidden="true" />
+                Add Question
+              </button>
+            </div>
           </div>
 
           <div className="space-y-5 sm:space-y-6">
@@ -390,6 +408,16 @@ export default function CreateSurvey() {
           </button>
         </div>
       </form>
+
+      {/* Import questions modal */}
+      <AnimatePresence>
+        {showImportModal && (
+          <ImportQuestionsModal
+            onClose={() => setShowImportModal(false)}
+            onImport={handleImportQuestions}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Floating "Add Question" button */}
       <AnimatePresence>
