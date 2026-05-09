@@ -105,7 +105,7 @@ export default function Feed() {
           {[1, 2, 3, 4].map(i => <SurveySkeleton key={i} />)}
         </div>
       ) : filteredSurveys.length === 0 ? (
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-8 lg:p-16 text-center border border-stone-200 max-w-3/4 shadow-sm">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-8 lg:p-16 text-center border border-stone-200 w-full shadow-sm">
           <div className="w-12 h-12 sm:w-14 sm:h-14 bg-stone-50 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
             <SearchIcon className="w-6 h-6 sm:w-7 sm:h-7 text-stone-300" aria-hidden="true" />
           </div>
@@ -124,7 +124,7 @@ export default function Feed() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.04, duration: 0.2 }}
               className={cn(
-                'group relative p-4 sm:p-5 lg:p-6 border bg-white rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-4 md:gap-6 transition-all',
+                'group relative sm:w-full w-3/4 p-4 sm:p-5 lg:p-6 border bg-white rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-4 md:gap-6 transition-all',
                 survey.boosted
                   ? 'border-amber-200 bg-amber-50/20 shadow-md shadow-amber-900/5'
                   : 'border-stone-200 hover:border-emerald-600/30 hover:shadow-lg hover:shadow-stone-200/50'
