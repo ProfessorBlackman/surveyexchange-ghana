@@ -166,7 +166,7 @@ export default function Feed() {
                   <p className={cn(
                     'text-base sm:text-lg font-mono font-bold leading-none',
                     survey.boosted ? 'text-amber-700' : 'text-stone-700'
-                  )}>+1</p>
+                  )}>+{survey.creditValue}</p>
                   <p className="text-[10px] sm:text-[11px] text-stone-400 uppercase font-black tracking-tighter">Credit</p>
                 </div>
 
